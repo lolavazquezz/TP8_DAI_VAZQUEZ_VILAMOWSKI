@@ -1,23 +1,22 @@
 import * as React from 'react';
-import { Button, TextInput, Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native'; 
+import { Button, TextInput, Text, View, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native'; 
 import { NavigationContainer, useNavigation } from '@react-navigation/native'; 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; 
 import { createNativeStackNavigator } from '@react-navigation/native-stack'; 
 import { Ionicons } from '@expo/vector-icons'; 
+import CalendarioEntrenamientos from './components/CalendarioEntrenamientos';
+import Clima from './components/Clima';
 
-// Screens del Primer Stack 
 function ScreenA1() { 
   const navigation = useNavigation(); 
   return ( 
-    <View style={styles.pinkScreen}> 
-      <Text style={styles.text}>Pantalla A1</Text>
-      <Button 
-        title="Ir a A2" 
-        onPress={() => navigation.navigate('ScreenA2')} 
-      />
-    </View> 
+    <ScrollView contentContainerStyle={styles.container}>
+      <Clima />
+      <CalendarioEntrenamientos />
+    </ScrollView>
   ); 
 }
+
 
 function ScreenA2() { 
   return ( 
@@ -101,11 +100,19 @@ const StackC = createNativeStackNavigator();
 function StackANavigator() { 
   return ( 
     <StackA.Navigator> 
-      <StackA.Screen name="ScreenA1" component={ScreenA1} /> 
-      <StackA.Screen name="ScreenA2" component={ScreenA2} /> 
+      <StackA.Screen 
+        name="ScreenA1" 
+        component={ScreenA1} 
+        options={{ headerShown: false }} // Ocultar el título de la pantalla
+      /> 
+      <StackA.Screen 
+        name="ScreenA2" 
+        component={ScreenA2} 
+      /> 
     </StackA.Navigator> 
   );
 }
+
 
 function StackBNavigator() { 
   return ( 
@@ -172,22 +179,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     width: '80%',
   },
-  pinkScreen: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: '#FFC0CB',
-  },
-  yellowScreen: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: '#FFD700',
-  },
-  greenScreen: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: '#32CD32',
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
