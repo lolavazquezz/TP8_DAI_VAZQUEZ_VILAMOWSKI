@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, FlatList, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 export default function CalendarioEntrenamientos({ entrenamientos }) {
@@ -24,11 +24,12 @@ export default function CalendarioEntrenamientos({ entrenamientos }) {
     const date = day.dateString;
     if (entrenamientos[date]) {
       const eventType = entrenamientos[date].eventType;
-      alert(`${eventType} programado para el día: ${date}`);
+      const contactName = entrenamientos[date].contact;
+      alert(`${eventType} programado para el día: ${date}${contactName ? ` con ${contactName}` : ''}`);
     } else {
       alert('No hay entrenamientos programados para este día.');
     }
-  };
+  };  
 
   return (
     <View style={styles.container}>

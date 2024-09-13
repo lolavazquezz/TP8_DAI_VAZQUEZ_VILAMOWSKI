@@ -1,25 +1,28 @@
 import * as React from 'react';
-import { Button, TextInput, Text, View, Alert, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native'; 
+import { Button, TextInput, Text, View, StyleSheet, ScrollView} from 'react-native'; 
 import { NavigationContainer, useNavigation } from '@react-navigation/native'; 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; 
 import { createNativeStackNavigator } from '@react-navigation/native-stack'; 
 import { Ionicons } from '@expo/vector-icons'; 
 import CalendarioEntrenamientos from './components/CalendarioEntrenamientos';
 import Clima from './components/Clima';
-import Contactos from './components/Contactos'; // Importación por defecto
+import Contactos from './components/Contactos';
 import DetallesContacto from './components/DetallesContacto';
 import { useState } from 'react';
- // Importación por defecto
  export default function App() {
  const [entrenamientos, setEntrenamientos] = useState({});
 
- const addTrainingToCalendar = (date, type) => {
-   setEntrenamientos((prev) => ({
-     ...prev,
-     [date]: { marked: true, dotColor: type.toLowerCase().includes('carrera') ? 'red' : 'blue', eventType: type },
-   }));
- };
-// Componentes de las Pantallas
+ const addTrainingToCalendar = (date, type, contact) => {
+  setEntrenamientos((prev) => ({
+    ...prev,
+    [date]: {
+      marked: true,
+      dotColor: type.toLowerCase().includes('carrera') ? 'red' : 'blue',
+      eventType: type,
+      contact: contact ? contact.name : null, // Agrega la información del contacto
+    },
+  }));
+};
 const ScreenA1 = () => (
   <ScrollView contentContainerStyle={styles.container}>
     <Clima />
@@ -32,8 +35,10 @@ const ScreenB1 = () => {
 };
 
 const ScreenB2 = ({ route }) => {
-  return <DetallesContacto route={route} />;
+  return <DetallesContacto route={route} addTrainingToCalendar={addTrainingToCalendar} />;
 };
+
+
 
 const ScreenC1 = () => {
   const navigation = useNavigation();
@@ -63,7 +68,6 @@ const ScreenC2 = ({ route }) => {
   );
 };
 
-// Navegadores de Stack
 const StackA = createNativeStackNavigator();
 const StackB = createNativeStackNavigator();
 const StackC = createNativeStackNavigator();
@@ -76,10 +80,32 @@ const StackANavigator = () => (
 
 const StackBNavigator = () => (
   <StackB.Navigator>
-    <StackB.Screen name="ScreenB1" component={ScreenB1}  options={{ headerShown: false }}/>
-    <StackB.Screen name="ScreenB2" component={ScreenB2} />
+    <StackB.Screen 
+      name="ScreenB1" 
+      component={ScreenB1} 
+      options={{ headerShown: false }} 
+    />
+    <StackB.Screen 
+      name="ScreenB2" 
+      component={ScreenB2} 
+      options={({ navigation }) => ({
+        headerTitle: 'Contactos', // Establece el título del encabezado
+        headerBackTitleVisible: false, // Oculta el título del botón de retroceso
+        headerBackImage: () => (
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color="black"
+            style={{ marginLeft: 10 }}
+          />
+        ),
+        headerBackButtonMenuEnabled: true, // Habilita el botón de retroceso
+      })}
+    />
   </StackB.Navigator>
 );
+
+
 
 const StackCNavigator = () => (
   <StackC.Navigator>
@@ -87,8 +113,6 @@ const StackCNavigator = () => (
     <StackC.Screen name="ScreenC2" component={ScreenC2} />
   </StackC.Navigator>
 );
-
-// Navegador de Pestañas
 const Tab = createBottomTabNavigator();
 const MyTabs = () => (
   <Tab.Navigator screenOptions={({ route }) => ({
@@ -110,7 +134,6 @@ const MyTabs = () => (
   </Tab.Navigator>
 );
 
-// Aplicación Principal
 
   return (
     <NavigationContainer>
@@ -119,7 +142,6 @@ const MyTabs = () => (
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
   text: { 
     color: 'white', 

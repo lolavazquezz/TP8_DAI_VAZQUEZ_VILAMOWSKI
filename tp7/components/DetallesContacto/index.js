@@ -1,17 +1,27 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import ModalInvitacion from '../ModalInvitacion';
 
-export default function DetallesContacto({ route }) {
+export default function DetallesContacto({ route, addTrainingToCalendar }) { // Recibe la función como prop
   const { contact } = route.params;
-  const navigation = useNavigation();
   const [entrenamientos, setEntrenamientos] = React.useState({});
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(contact);
 
   React.useEffect(() => {
-    // Simula la obtención de entrenamientos pendientes relacionados con el contacto
     const exampleEvents = {};
     setEntrenamientos(exampleEvents);
   }, [contact]);
+
+  const handleInvite = () => {
+    setModalVisible(true); // Muestra el modal de invitación
+  };
+
+  const handleConfirmInvite = (date, type) => {
+    addTrainingToCalendar(date, type, selectedContact); // Llama a la función pasada por props
+    Alert.alert('Invitación enviada', `Invitación a ${selectedContact.name} para ${type} el ${date}.`);
+    setModalVisible(false);
+  };
 
   return (
     <View style={styles.yellowScreen}>
@@ -28,7 +38,13 @@ export default function DetallesContacto({ route }) {
       ) : (
         <Text style={styles.contactDetail}>No hay entrenamientos pendientes.</Text>
       )}
-      <Button title="Volver a Contactos" onPress={() => navigation.goBack()} />
+      <Text style={styles.button} onPress={handleInvite}>Invitar</Text>
+      <ModalInvitacion
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleConfirmInvite}
+        contactName={selectedContact?.name}
+      />
     </View>
   );
 }
@@ -48,5 +64,9 @@ const styles = StyleSheet.create({
   contactDetail: {
     fontSize: 18,
     marginVertical: 5,
+  },
+  button: {
+    color:'blue',
+    fontSize: 20,
   },
 });

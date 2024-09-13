@@ -1,12 +1,11 @@
-// components/Contactos.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity, Alert } from 'react-native';
 import * as Contacts from 'expo-contacts';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import ModalInvitacion from '../ModalInvitacion';
 
-export default function Contactos({ addTrainingToCalendar }) { // Acepta una prop para añadir entrenamientos
+export default function Contactos({ addTrainingToCalendar }) {
   const navigation = useNavigation();
   const [contactos, setContactos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,21 +32,23 @@ export default function Contactos({ addTrainingToCalendar }) { // Acepta una pro
   };
 
   const handleConfirmInvite = (date, type) => {
-    addTrainingToCalendar(date, type); // Añade el entrenamiento al calendario de la pantalla Home
+    addTrainingToCalendar(date, type, selectedContact); // Pasa el contacto seleccionado
     Alert.alert('Invitación enviada', `Invitación a ${selectedContact.name} para ${type} el ${date}.`);
-  };
+  };  
 
   const renderItem = ({ item }) => {
-    const isEmergencyContact = item.name.toLowerCase().includes('emergencia');
+    const nameLower = item.name ? item.name.toLowerCase() : '';
+    const isEmergencyContact = nameLower.includes('emergencia');
+  
     return (
-      <TouchableOpacity style={styles.contactItem} onPress={() => navigation.navigate('ScreenB2', { contact: item })}>
+      <TouchableOpacity style={styles.contactItem} onPress={() => navigation.navigate('ScreenB2', { contact: item, addTrainingToCalendar })}>
         <Text style={styles.contactName}>{item.name}</Text>
         {item.phoneNumbers?.length > 0 && (
           <Text style={styles.contactPhone}>{item.phoneNumbers[0].number}</Text>
         )}
         {isEmergencyContact && <Ionicons name="warning" size={24} color="red" />}
         <TouchableOpacity style={styles.inviteButton} onPress={() => handleInvite(item)}>
-          <Ionicons name="md-send" size={24} color="blue" />
+          <Text style={styles.button}>Invitar</Text>
         </TouchableOpacity>
       </TouchableOpacity>
     );
@@ -61,6 +62,7 @@ export default function Contactos({ addTrainingToCalendar }) { // Acepta una pro
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onConfirm={handleConfirmInvite}
+        contactName={selectedContact?.name}
       />
     </View>
   );
@@ -87,5 +89,8 @@ const styles = StyleSheet.create({
   },
   inviteButton: {
     marginLeft: 10,
+  },
+  button: {
+    color: 'blue',
   },
 });

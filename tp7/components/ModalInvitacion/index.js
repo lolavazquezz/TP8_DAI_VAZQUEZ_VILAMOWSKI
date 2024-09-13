@@ -1,8 +1,7 @@
-// components/InvitationModal.js
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
-export default function ModalInvitacion({ visible, onClose, onConfirm }) {
+export default function ModalInvitacion({ visible, onClose, onConfirm, contactName }) {
   const [eventDate, setEventDate] = useState('');
   const [eventType, setEventType] = useState('');
 
@@ -21,7 +20,9 @@ export default function ModalInvitacion({ visible, onClose, onConfirm }) {
     <Modal transparent={true} visible={visible} animationType="slide">
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Invitar a una Carrera</Text>
+          <Text style={styles.title}>
+            {contactName ? `Invitar a una Carrera a ${contactName}` : 'Invitar a una Carrera'}
+          </Text>
           <TextInput
             style={styles.input}
             placeholder="Fecha (YYYY-MM-DD)"
