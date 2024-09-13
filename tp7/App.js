@@ -6,7 +6,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons'; 
 import CalendarioEntrenamientos from './components/CalendarioEntrenamientos';
 import Clima from './components/Clima';
-import * as Contacts from 'expo-contacts';
+import Contactos from './components/Contactos'; // Importación por defecto
+import DetallesContacto from './components/DetallesContacto'; // Importación por defecto
+
 
 // Componentes de las Pantallas
 const ScreenA1 = () => (
@@ -16,95 +18,12 @@ const ScreenA1 = () => (
   </ScrollView>
 );
 
-const ScreenA2 = () => (
-  <View style={styles.pinkScreen}>
-    <Text style={styles.text}>Pantalla A2</Text>
-  </View>
-);
-
 const ScreenB1 = () => {
-  const navigation = useNavigation();
-  const [contactos, setContactos] = React.useState([]);
-
-  React.useEffect(() => {
-    const fetchContacts = async () => {
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status === 'granted') {
-        const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.PhoneNumbers],
-        });
-        if (data.length > 0) {
-          setContactos(data);
-        }
-      }
-    };
-    fetchContacts();
-  }, []);
-
-  const handleInvite = (contact) => {
-    Alert.alert(
-      'Invitar a Carrera',
-      `¿Deseas invitar a ${contact.name} a una carrera?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Invitar', onPress: () => console.log(`Invitación enviada a ${contact.name}`) },
-      ]
-    );
-  };
-
-  const renderItem = ({ item }) => {
-    const isEmergencyContact = item.name.toLowerCase().includes('emergencia');
-    return (
-      <TouchableOpacity style={styles.contactItem} onPress={() => navigation.navigate('ScreenB2', { contact: item })}>
-        <Text style={styles.contactName}>{item.name}</Text>
-        {item.phoneNumbers?.length > 0 && (
-          <Text style={styles.contactPhone}>{item.phoneNumbers[0].number}</Text>
-        )}
-        {isEmergencyContact && <Ionicons name="warning" size={24} color="red" />}
-        <TouchableOpacity style={styles.inviteButton} onPress={() => handleInvite(item)}>
-          <Ionicons name="md-send" size={24} color="blue" />
-        </TouchableOpacity>
-      </TouchableOpacity>
-    );
-  };
-
-  return (
-    <View style={styles.yellowScreen}>
-      <Text style={styles.text}>Contactos del Teléfono</Text>
-      <FlatList data={contactos} keyExtractor={(item) => item.id} renderItem={renderItem} />
-    </View>
-  );
+  return <Contactos />
 };
 
 const ScreenB2 = ({ route }) => {
-  const { contact } = route.params;
-  const navigation = useNavigation();
-  const [entrenamientos, setEntrenamientos] = React.useState({});
-
-  React.useEffect(() => {
-    // Simula la obtención de entrenamientos pendientes relacionados con el contacto
-    const exampleEvents = {};
-    setEntrenamientos(exampleEvents);
-  }, [contact]);
-
-  return (
-    <View style={styles.yellowScreen}>
-      <Text style={styles.text}>Detalle de Contacto</Text>
-      <Text style={styles.contactDetail}>Nombre: {contact.name}</Text>
-      {contact.phoneNumbers?.length > 0 && (
-        <Text style={styles.contactDetail}>Teléfono: {contact.phoneNumbers[0].number}</Text>
-      )}
-      <Text style={styles.contactDetail}>Entrenamientos Pendientes:</Text>
-      {Object.keys(entrenamientos).length > 0 ? (
-        Object.keys(entrenamientos).map(date => (
-          <Text key={date} style={styles.contactDetail}>{entrenamientos[date].eventType} para el {date}</Text>
-        ))
-      ) : (
-        <Text style={styles.contactDetail}>No hay entrenamientos pendientes.</Text>
-      )}
-      <Button title="Volver a Contactos" onPress={() => navigation.goBack()} />
-    </View>
-  );
+  return <DetallesContacto route={route} />;
 };
 
 const ScreenC1 = () => {
@@ -143,7 +62,6 @@ const StackC = createNativeStackNavigator();
 const StackANavigator = () => (
   <StackA.Navigator>
     <StackA.Screen name="ScreenA1" component={ScreenA1} options={{ headerShown: false }} />
-    <StackA.Screen name="ScreenA2" component={ScreenA2} />
   </StackA.Navigator>
 );
 
@@ -211,48 +129,5 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  contactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  contactName: {
-    flex: 1,
-    fontSize: 16,
-  },
-  contactPhone: {
-    fontSize: 14,
-    color: '#666',
-  },
-  contactDetail: {
-    fontSize: 18,
-    marginVertical: 5,
-  },
-  inviteButton: {
-    marginLeft: 10,
-  },
-  yellowScreen: {
-    flex: 1,
-    backgroundColor: '#FFEB3B',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  greenScreen: {
-    flex: 1,
-    backgroundColor: '#4CAF50',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  pinkScreen: {
-    flex: 1,
-    backgroundColor: '#E91E63',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
   },
 });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
+import { View, FlatList, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 export default function CalendarioEntrenamientos() {
