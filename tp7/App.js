@@ -7,19 +7,28 @@ import { Ionicons } from '@expo/vector-icons';
 import CalendarioEntrenamientos from './components/CalendarioEntrenamientos';
 import Clima from './components/Clima';
 import Contactos from './components/Contactos'; // Importación por defecto
-import DetallesContacto from './components/DetallesContacto'; // Importación por defecto
+import DetallesContacto from './components/DetallesContacto';
+import { useState } from 'react';
+ // Importación por defecto
+ export default function App() {
+ const [entrenamientos, setEntrenamientos] = useState({});
 
-
+ const addTrainingToCalendar = (date, type) => {
+   setEntrenamientos((prev) => ({
+     ...prev,
+     [date]: { marked: true, dotColor: type.toLowerCase().includes('carrera') ? 'red' : 'blue', eventType: type },
+   }));
+ };
 // Componentes de las Pantallas
 const ScreenA1 = () => (
   <ScrollView contentContainerStyle={styles.container}>
     <Clima />
-    <CalendarioEntrenamientos />
+    <CalendarioEntrenamientos entrenamientos={entrenamientos} />
   </ScrollView>
 );
 
 const ScreenB1 = () => {
-  return <Contactos />
+  return <Contactos addTrainingToCalendar={addTrainingToCalendar} />;
 };
 
 const ScreenB2 = ({ route }) => {
@@ -67,7 +76,7 @@ const StackANavigator = () => (
 
 const StackBNavigator = () => (
   <StackB.Navigator>
-    <StackB.Screen name="ScreenB1" component={ScreenB1} />
+    <StackB.Screen name="ScreenB1" component={ScreenB1}  options={{ headerShown: false }}/>
     <StackB.Screen name="ScreenB2" component={ScreenB2} />
   </StackB.Navigator>
 );
@@ -102,7 +111,7 @@ const MyTabs = () => (
 );
 
 // Aplicación Principal
-export default function App() {
+
   return (
     <NavigationContainer>
       <MyTabs />

@@ -36,7 +36,7 @@ export default function DetallesContacto({ route }) {
 const styles = StyleSheet.create({
   yellowScreen: {
     padding: 16,
-    backgroundColor: 'yellow',
+    backgroundColor: 'white',
     flex: 1,
   },
   text: {

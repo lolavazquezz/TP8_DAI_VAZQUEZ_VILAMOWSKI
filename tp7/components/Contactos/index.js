@@ -1,12 +1,16 @@
+// components/Contactos.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import * as Contacts from 'expo-contacts';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native'; // Agregar esta importación
+import { useNavigation } from '@react-navigation/native';
+import ModalInvitacion from '../ModalInvitacion';
 
-export default function Contactos() {
+export default function Contactos({ addTrainingToCalendar }) { // Acepta una prop para añadir entrenamientos
   const navigation = useNavigation();
-  const [contactos, setContactos] = React.useState([]);
+  const [contactos, setContactos] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -24,14 +28,13 @@ export default function Contactos() {
   }, []);
 
   const handleInvite = (contact) => {
-    Alert.alert(
-      'Invitar a Carrera',
-      `¿Deseas invitar a ${contact.name} a una carrera?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Invitar', onPress: () => console.log(`Invitación enviada a ${contact.name}`) },
-      ]
-    );
+    setSelectedContact(contact);
+    setModalVisible(true);
+  };
+
+  const handleConfirmInvite = (date, type) => {
+    addTrainingToCalendar(date, type); // Añade el entrenamiento al calendario de la pantalla Home
+    Alert.alert('Invitación enviada', `Invitación a ${selectedContact.name} para ${type} el ${date}.`);
   };
 
   const renderItem = ({ item }) => {
@@ -51,14 +54,22 @@ export default function Contactos() {
   };
 
   return (
-    <View style={styles.yellowScreen}>
+    <View style={styles.screen}>
       <Text style={styles.text}>Contactos del Teléfono</Text>
       <FlatList data={contactos} keyExtractor={(item) => item.id} renderItem={renderItem} />
+      <ModalInvitacion
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleConfirmInvite}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    backgroundColor: 'white',
+  },
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -73,10 +84,6 @@ const styles = StyleSheet.create({
   contactPhone: {
     fontSize: 14,
     color: '#666',
-  },
-  contactDetail: {
-    fontSize: 18,
-    marginVertical: 5,
   },
   inviteButton: {
     marginLeft: 10,

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { View, FlatList, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
-export default function CalendarioEntrenamientos() {
-  const [entrenamientos, setEntrenamientos] = useState({ });
+export default function CalendarioEntrenamientos({ entrenamientos }) {
   const [newEventDate, setNewEventDate] = useState('');
   const [newEventType, setNewEventType] = useState('');
 
