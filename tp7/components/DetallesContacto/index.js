@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Alert, Button, TouchableOpacity } from 'react-native';
 import ModalInvitacion from '../ModalInvitacion';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
 
-export default function DetallesContacto({ route, addTrainingToCalendar }) { // Recibe la función como prop
+export default function DetallesContacto({ route, addTrainingToCalendar }) {
   const { contact } = route.params;
-  const [entrenamientos, setEntrenamientos] = React.useState({});
+  const [entrenamientos, setEntrenamientos] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(contact);
+  const [isEmergencyContact, setIsEmergencyContact] = useState(false);
 
-  React.useEffect(() => {
-    const exampleEvents = {};
-    setEntrenamientos(exampleEvents);
+  useEffect(() => {
+    const loadEmergencyContacts = async () => {
+      const storedEmergencyContacts = await AsyncStorage.getItem('emergencyContacts');
+      if (storedEmergencyContacts) {
+        const emergencyContacts = JSON.parse(storedEmergencyContacts);
+        setIsEmergencyContact(emergencyContacts.includes(contact.id));
+      }
+    };
+
+    loadEmergencyContacts();
   }, [contact]);
 
   const handleInvite = () => {
@@ -23,6 +32,24 @@ export default function DetallesContacto({ route, addTrainingToCalendar }) { // 
     setModalVisible(false);
   };
 
+  const toggleEmergencyContact = async () => {
+    const storedEmergencyContacts = await AsyncStorage.getItem('emergencyContacts');
+    let emergencyContacts = storedEmergencyContacts ? JSON.parse(storedEmergencyContacts) : [];
+
+    if (isEmergencyContact) {
+      // Remover de contactos de emergencia
+      emergencyContacts = emergencyContacts.filter((id) => id !== contact.id);
+      Alert.alert('Contacto removido de emergencia');
+    } else {
+      // Agregar a contactos de emergencia
+      emergencyContacts.push(contact.id);
+      Alert.alert('Contacto agregado a emergencia');
+    }
+
+    await AsyncStorage.setItem('emergencyContacts', JSON.stringify(emergencyContacts));
+    setIsEmergencyContact(!isEmergencyContact);
+  };
+
   return (
     <View style={styles.yellowScreen}>
       <Text style={styles.text}>Detalle de Contacto</Text>
@@ -32,13 +59,25 @@ export default function DetallesContacto({ route, addTrainingToCalendar }) { // 
       )}
       <Text style={styles.contactDetail}>Entrenamientos Pendientes:</Text>
       {Object.keys(entrenamientos).length > 0 ? (
-        Object.keys(entrenamientos).map(date => (
-          <Text key={date} style={styles.contactDetail}>{entrenamientos[date].eventType} para el {date}</Text>
+        Object.keys(entrenamientos).map((date) => (
+          <Text key={date} style={styles.contactDetail}>
+            {entrenamientos[date].eventType} para el {date}
+          </Text>
         ))
       ) : (
         <Text style={styles.contactDetail}>No hay entrenamientos pendientes.</Text>
       )}
-      <Text style={styles.button} onPress={handleInvite}>Invitar</Text>
+      <Text style={styles.button} onPress={handleInvite}>
+        Invitar
+      </Text>
+      <TouchableOpacity
+        style={[styles.emergencyButton, isEmergencyContact && { backgroundColor: 'red' }]} // El botón será rojo si es contacto de emergencia
+        onPress={toggleEmergencyContact}
+      >
+        <Text style={styles.emergencyButtonText}>
+          {isEmergencyContact ? 'Remover de Contactos de Emergencia' : 'Agregar a Contactos de Emergencia'}
+        </Text>
+      </TouchableOpacity>
       <ModalInvitacion
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -66,7 +105,19 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   button: {
-    color:'blue',
+    color: 'blue',
     fontSize: 20,
+    marginVertical: 10,
+  },
+  emergencyButton: {
+    padding: 10,
+    marginVertical: 10,
+    backgroundColor: 'green',
+    borderRadius: 5,
+  },
+  emergencyButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 16,
   },
 });

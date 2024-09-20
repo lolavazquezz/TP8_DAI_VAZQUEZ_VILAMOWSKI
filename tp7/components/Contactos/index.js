@@ -1,30 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import * as Contacts from 'expo-contacts';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Importa useFocusEffect
 import ModalInvitacion from '../ModalInvitacion';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
 
 export default function Contactos({ addTrainingToCalendar }) {
   const navigation = useNavigation();
   const [contactos, setContactos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
+  const [emergencyContacts, setEmergencyContacts] = useState([]);
 
-  useEffect(() => {
-    const fetchContacts = async () => {
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status === 'granted') {
-        const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.PhoneNumbers],
-        });
-        if (data.length > 0) {
-          setContactos(data);
-        }
+  // Esta función carga los contactos de emergencia desde AsyncStorage
+  const loadEmergencyContacts = async () => {
+    const storedEmergencyContacts = await AsyncStorage.getItem('emergencyContacts');
+    if (storedEmergencyContacts) {
+      setEmergencyContacts(JSON.parse(storedEmergencyContacts));
+    } else {
+      setEmergencyContacts([]); // Asegura que esté vacío si no hay contactos de emergencia
+    }
+  };
+
+  // Recarga los contactos del teléfono
+  const fetchContacts = async () => {
+    const { status } = await Contacts.requestPermissionsAsync();
+    if (status === 'granted') {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.PhoneNumbers],
+      });
+      if (data.length > 0) {
+        setContactos(data);
       }
-    };
-    fetchContacts();
-  }, []);
+    }
+  };
+
+  // Este hook recarga los contactos cada vez que la pantalla está en foco
+  useFocusEffect(
+    useCallback(() => {
+      fetchContacts(); // Carga los contactos del teléfono
+      loadEmergencyContacts(); // Carga los contactos de emergencia desde AsyncStorage
+    }, [])
+  );
 
   const handleInvite = (contact) => {
     setSelectedContact(contact);
@@ -34,19 +52,27 @@ export default function Contactos({ addTrainingToCalendar }) {
   const handleConfirmInvite = (date, type) => {
     addTrainingToCalendar(date, type, selectedContact); // Pasa el contacto seleccionado
     Alert.alert('Invitación enviada', `Invitación a ${selectedContact.name} para ${type} el ${date}.`);
-  };  
+  };
+
+  const isEmergencyContact = (contactId) => {
+    return emergencyContacts.includes(contactId);
+  };
 
   const renderItem = ({ item }) => {
-    const nameLower = item.name ? item.name.toLowerCase() : '';
-    const isEmergencyContact = nameLower.includes('emergencia');
-  
     return (
-      <TouchableOpacity style={styles.contactItem} onPress={() => navigation.navigate('ScreenB2', { contact: item, addTrainingToCalendar })}>
-        <Text style={styles.contactName}>{item.name}</Text>
-        {item.phoneNumbers?.length > 0 && (
-          <Text style={styles.contactPhone}>{item.phoneNumbers[0].number}</Text>
+      <TouchableOpacity
+        style={styles.contactItem}
+        onPress={() => navigation.navigate('ScreenB2', { contact: item })}
+      >
+        {isEmergencyContact(item.id) && (
+          <Ionicons name="ios-warning" size={24} color="red" style={styles.emergencyIcon} />
         )}
-        {isEmergencyContact && <Ionicons name="warning" size={24} color="red" />}
+        <View style={styles.contactInfo}>
+          <Text style={styles.contactName}>{item.name}</Text>
+          {item.phoneNumbers?.length > 0 && (
+            <Text style={styles.contactPhone}>{item.phoneNumbers[0].number}</Text>
+          )}
+        </View>
         <TouchableOpacity style={styles.inviteButton} onPress={() => handleInvite(item)}>
           <Text style={styles.button}>Invitar</Text>
         </TouchableOpacity>
@@ -71,6 +97,12 @@ export default function Contactos({ addTrainingToCalendar }) {
 const styles = StyleSheet.create({
   screen: {
     backgroundColor: 'white',
+    flex: 1,
+  },
+  text: {
+    fontSize: 20,
+    marginVertical: 10,
+    textAlign: 'center',
   },
   contactItem: {
     flexDirection: 'row',
@@ -79,8 +111,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  contactName: {
+  emergencyIcon: {
+    marginRight: 10,
+  },
+  contactInfo: {
     flex: 1,
+  },
+  contactName: {
     fontSize: 16,
   },
   contactPhone: {
