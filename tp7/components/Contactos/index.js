@@ -65,7 +65,7 @@ export default function Contactos({ addTrainingToCalendar }) {
         onPress={() => navigation.navigate('ScreenB2', { contact: item })}
       >
         {isEmergencyContact(item.id) && (
-          <Ionicons name="ios-warning" size={24} color="red" style={styles.emergencyIcon} />
+          <Ionicons name="medical" size={24} color="red" style={styles.emergencyIcon} />
         )}
         <View style={styles.contactInfo}>
           <Text style={styles.contactName}>{item.name}</Text>
