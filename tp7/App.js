@@ -9,6 +9,8 @@ import Clima from './components/Clima';
 import Contactos from './components/Contactos';
 import DetallesContacto from './components/DetallesContacto';
 import { useState } from 'react';
+import About from './components/About'; 
+
  export default function App() {
  const [entrenamientos, setEntrenamientos] = useState({});
 
@@ -40,33 +42,16 @@ const ScreenB2 = ({ route }) => {
 
 
 
+
 const ScreenC1 = () => {
-  const navigation = useNavigation();
-  const [name, setName] = React.useState('');
-  const [phone, setPhone] = React.useState('');
-
   return (
-    <View style={styles.greenScreen}>
-      <Text style={styles.text}>Pantalla C1</Text>
-      <TextInput style={styles.input} placeholder="Nombre" onChangeText={setName} value={name} />
-      <TextInput style={styles.input} placeholder="Teléfono" onChangeText={setPhone} value={phone} />
-      <Button title="Confirmar" onPress={() => navigation.navigate('ScreenC2', { name, phone })} />
+    <View style={styles.screenC1Container}>
+      <About />
     </View>
   );
 };
 
-const ScreenC2 = ({ route }) => {
-  const { name, phone } = route.params;
-  const navigation = useNavigation();
 
-  return (
-    <View style={styles.greenScreen}>
-      <Text style={styles.text}>Hola {name}</Text>
-      <Text style={styles.text}>Tu teléfono es {phone}</Text>
-      <Button title="Volver" onPress={() => navigation.goBack()} />
-    </View>
-  );
-};
 
 const StackA = createNativeStackNavigator();
 const StackB = createNativeStackNavigator();
@@ -110,7 +95,6 @@ const StackBNavigator = () => (
 const StackCNavigator = () => (
   <StackC.Navigator>
     <StackC.Screen name="ScreenC1" component={ScreenC1} />
-    <StackC.Screen name="ScreenC2" component={ScreenC2} />
   </StackC.Navigator>
 );
 const Tab = createBottomTabNavigator();
@@ -158,6 +142,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  screenC1Container: {
+    flex: 1,
+    paddingTop: 60, // Ajusta este valor según la altura de tu header
     justifyContent: 'center',
     alignItems: 'center',
   },
