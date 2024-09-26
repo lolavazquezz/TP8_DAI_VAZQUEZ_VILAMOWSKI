@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import * as Contacts from 'expo-contacts';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Importa useFocusEffect
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import ModalInvitacion from '../ModalInvitacion';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 export default function Contactos({ addTrainingToCalendar }) {
   const navigation = useNavigation();
@@ -13,17 +13,15 @@ export default function Contactos({ addTrainingToCalendar }) {
   const [selectedContact, setSelectedContact] = useState(null);
   const [emergencyContacts, setEmergencyContacts] = useState([]);
 
-  // Esta función carga los contactos de emergencia desde AsyncStorage
   const loadEmergencyContacts = async () => {
     const storedEmergencyContacts = await AsyncStorage.getItem('emergencyContacts');
     if (storedEmergencyContacts) {
       setEmergencyContacts(JSON.parse(storedEmergencyContacts));
     } else {
-      setEmergencyContacts([]); // Asegura que esté vacío si no hay contactos de emergencia
+      setEmergencyContacts([]);
     }
   };
 
-  // Recarga los contactos del teléfono
   const fetchContacts = async () => {
     const { status } = await Contacts.requestPermissionsAsync();
     if (status === 'granted') {
@@ -38,12 +36,10 @@ export default function Contactos({ addTrainingToCalendar }) {
     }
   };
   
-
-  // Este hook recarga los contactos cada vez que la pantalla está en foco
   useFocusEffect(
     useCallback(() => {
-      fetchContacts(); // Carga los contactos del teléfono
-      loadEmergencyContacts(); // Carga los contactos de emergencia desde AsyncStorage
+      fetchContacts(); 
+      loadEmergencyContacts(); 
     }, [])
   );
 
@@ -53,7 +49,7 @@ export default function Contactos({ addTrainingToCalendar }) {
   };
 
   const handleConfirmInvite = (date, type) => {
-    addTrainingToCalendar(date, type, selectedContact); // Pasa el contacto seleccionado
+    addTrainingToCalendar(date, type, selectedContact); 
     Alert.alert('Invitación enviada', `Invitación a ${selectedContact.name} para ${type} el ${date}.`);
   };
 

@@ -9,7 +9,7 @@ export default function CalendarioEntrenamientos({ entrenamientos, setEntrenamie
 
   const addEvent = () => {
     if (!newEventDate || !newEventType) {
-      showAlertWithVibration('Error', 'Por favor, completa todos los campos.'); // Usa el helper
+      showAlertWithVibration('Error', 'Por favor, completa todos los campos.');
       return;
     }
     setEntrenamientos(prev => ({
@@ -18,7 +18,7 @@ export default function CalendarioEntrenamientos({ entrenamientos, setEntrenamie
     }));
     setNewEventDate('');
     setNewEventType('');
-    showAlertWithVibration('Éxito', 'Entrenamiento o carrera añadida.'); // Usa el helper
+    showAlertWithVibration('Éxito', 'Entrenamiento o carrera añadida.');
   };
 
   const handleDayPress = (day) => {

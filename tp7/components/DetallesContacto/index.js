@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, Button, TouchableOpacity } from 'react-native';
 import ModalInvitacion from '../ModalInvitacion';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DetallesContacto({ route, addTrainingToCalendar }) {
   const { contact } = route.params;
@@ -23,11 +23,11 @@ export default function DetallesContacto({ route, addTrainingToCalendar }) {
   }, [contact]);
 
   const handleInvite = () => {
-    setModalVisible(true); // Muestra el modal de invitación
+    setModalVisible(true); 
   };
 
   const handleConfirmInvite = (date, type) => {
-    addTrainingToCalendar(date, type, selectedContact); // Llama a la función pasada por props
+    addTrainingToCalendar(date, type, selectedContact);
     Alert.alert('Invitación enviada', `Invitación a ${selectedContact.name} para ${type} el ${date}.`);
     setModalVisible(false);
   };
@@ -37,11 +37,9 @@ export default function DetallesContacto({ route, addTrainingToCalendar }) {
     let emergencyContacts = storedEmergencyContacts ? JSON.parse(storedEmergencyContacts) : [];
 
     if (isEmergencyContact) {
-      // Remover de contactos de emergencia
       emergencyContacts = emergencyContacts.filter((id) => id !== contact.id);
       Alert.alert('Contacto removido de emergencia');
     } else {
-      // Agregar a contactos de emergencia
       emergencyContacts.push(contact.id);
       Alert.alert('Contacto agregado a emergencia');
     }
@@ -61,7 +59,7 @@ export default function DetallesContacto({ route, addTrainingToCalendar }) {
         Invitar
       </Text>
       <TouchableOpacity
-        style={[styles.emergencyButton, isEmergencyContact && { backgroundColor: 'red' }]} // El botón será rojo si es contacto de emergencia
+        style={[styles.emergencyButton, isEmergencyContact && { backgroundColor: 'red' }]}
         onPress={toggleEmergencyContact}
       >
         <Text style={styles.emergencyButtonText}>

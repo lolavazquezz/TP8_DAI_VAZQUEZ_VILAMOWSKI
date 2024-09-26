@@ -21,7 +21,7 @@ import About from './components/About';
       marked: true,
       dotColor: type.toLowerCase().includes('carrera') ? 'red' : 'blue',
       eventType: type,
-      contact: contact ? contact.name : null, // Agrega la información del contacto
+      contact: contact ? contact.name : null,
     },
   }));
 };
@@ -74,8 +74,8 @@ const StackBNavigator = () => (
       name="ScreenB2" 
       component={ScreenB2} 
       options={({ navigation }) => ({
-        headerTitle: 'Contactos', // Establece el título del encabezado
-        headerBackTitleVisible: false, // Oculta el título del botón de retroceso
+        headerTitle: 'Contactos', 
+        headerBackTitleVisible: false,
         headerBackImage: () => (
           <Ionicons
             name="arrow-back"
@@ -84,7 +84,7 @@ const StackBNavigator = () => (
             style={{ marginLeft: 10 }}
           />
         ),
-        headerBackButtonMenuEnabled: true, // Habilita el botón de retroceso
+        headerBackButtonMenuEnabled: true, 
       })}
     />
   </StackB.Navigator>
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   screenC1Container: {
     flex: 1,
-    paddingTop: 60, // Ajusta este valor según la altura de tu header
+    paddingTop: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
