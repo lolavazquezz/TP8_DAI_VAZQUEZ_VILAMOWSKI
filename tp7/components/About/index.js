@@ -1,41 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Modal, StyleSheet, Alert } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { RNCamera } from 'react-native-camera';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const About = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [scannedData, setScannedData] = useState('');
-  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
 
   const groupNames = ['Lola Vazquez', 'Sasha Vilamowski'];
 
   const requestCameraPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          {
-            title: 'Permiso de cámara',
-            message: 'Esta aplicación necesita acceso a la cámara para escanear códigos QR',
-            buttonNeutral: 'Preguntar después',
-            buttonNegative: 'Cancelar',
-            buttonPositive: 'OK',
-          }
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          setHasCameraPermission(true);
-        } else {
-          Alert.alert('Permiso de cámara denegado');
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    } else {
-      setHasCameraPermission(true);
-    }
+    const { status } = await BarCodeScanner.requestPermissionsAsync();
+    setHasCameraPermission(status === 'granted');
   };
 
   useEffect(() => {
@@ -56,10 +34,16 @@ const About = () => {
     }
   };
 
+  if (hasCameraPermission === null) {
+    return <Text>Solicitando permiso para la cámara...</Text>;
+  }
+
+  if (hasCameraPermission === false) {
+    return <Text>No se ha concedido acceso a la cámara.</Text>;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>About</Text>
-      
+    <View style={styles.container}>      
       <QRCode
         value={JSON.stringify(groupNames)}
         size={150}
@@ -70,14 +54,11 @@ const About = () => {
       <Button title="Escanear otra App" onPress={openScanner} />
 
       <Modal visible={modalVisible} animationType="slide" transparent={false}>
-        <RNCamera
-          style={styles.camera}
-          onBarCodeRead={handleBarCodeScanned}
-          captureAudio={false}
-          type={RNCamera.Constants.Type.back} // Usa la cámara trasera
-        >
-          <Button title="Cerrar" onPress={() => setModalVisible(false)} />
-        </RNCamera>
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          style={StyleSheet.absoluteFillObject}
+        />
+        <Button title="Cerrar" onPress={() => setModalVisible(false)} />
       </Modal>
 
       {scanned && (
@@ -104,11 +85,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 20,
-  },
-  camera: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
   },
   modalContainer: {
     flex: 1,

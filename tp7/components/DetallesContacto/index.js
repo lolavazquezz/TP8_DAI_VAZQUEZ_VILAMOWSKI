@@ -57,16 +57,6 @@ export default function DetallesContacto({ route, addTrainingToCalendar }) {
       {contact.phoneNumbers?.length > 0 && (
         <Text style={styles.contactDetail}>Teléfono: {contact.phoneNumbers[0].number}</Text>
       )}
-      <Text style={styles.contactDetail}>Entrenamientos Pendientes:</Text>
-      {Object.keys(entrenamientos).length > 0 ? (
-        Object.keys(entrenamientos).map((date) => (
-          <Text key={date} style={styles.contactDetail}>
-            {entrenamientos[date].eventType} para el {date}
-          </Text>
-        ))
-      ) : (
-        <Text style={styles.contactDetail}>No hay entrenamientos pendientes.</Text>
-      )}
       <Text style={styles.button} onPress={handleInvite}>
         Invitar
       </Text>

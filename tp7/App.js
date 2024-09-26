@@ -28,7 +28,7 @@ import About from './components/About';
 const ScreenA1 = () => (
   <ScrollView contentContainerStyle={styles.container}>
     <Clima />
-    <CalendarioEntrenamientos entrenamientos={entrenamientos} />
+    <CalendarioEntrenamientos entrenamientos={entrenamientos} setEntrenamientos={setEntrenamientos} />
   </ScrollView>
 );
 
