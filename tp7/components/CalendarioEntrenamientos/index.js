@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import showAlertWithVibration from '../AlertHelper';
 
 export default function CalendarioEntrenamientos({ entrenamientos, setEntrenamientos }) {
   const [newEventDate, setNewEventDate] = useState('');
@@ -8,7 +9,7 @@ export default function CalendarioEntrenamientos({ entrenamientos, setEntrenamie
 
   const addEvent = () => {
     if (!newEventDate || !newEventType) {
-      Alert.alert('Error', 'Por favor, completa todos los campos.');
+      showAlertWithVibration('Error', 'Por favor, completa todos los campos.'); // Usa el helper
       return;
     }
     setEntrenamientos(prev => ({
@@ -17,7 +18,7 @@ export default function CalendarioEntrenamientos({ entrenamientos, setEntrenamie
     }));
     setNewEventDate('');
     setNewEventType('');
-    Alert.alert('Éxito', 'Entrenamiento o carrera añadida.');
+    showAlertWithVibration('Éxito', 'Entrenamiento o carrera añadida.'); // Usa el helper
   };
 
   const handleDayPress = (day) => {

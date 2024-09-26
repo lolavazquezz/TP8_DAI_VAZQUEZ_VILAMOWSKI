@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Alert} from 'react-native';
 import * as Location from 'expo-location';
 import axios from 'axios';
+import showAlertWithVibration from '../AlertHelper';
 
 export default function Clima() {
   const [clima, setClima] = useState({});
@@ -47,7 +48,7 @@ export default function Clima() {
         icono: response.data.weather[0].icon,
       });
     } catch (error) {
-      Alert.alert('Error', 'No se pudo obtener el clima. Inténtalo de nuevo más tarde.');
+      showAlertWithVibration('Error', 'No se pudo obtener el clima. Inténtalo de nuevo más tarde.'); // Usa el helper
     }
   };
 

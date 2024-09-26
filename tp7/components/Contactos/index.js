@@ -33,8 +33,11 @@ export default function Contactos({ addTrainingToCalendar }) {
       if (data.length > 0) {
         setContactos(data);
       }
+    } else {
+      showAlertWithVibration('Permiso denegado', 'Necesitamos acceso a los contactos para mostrar la lista.'); // Usa el helper
     }
   };
+  
 
   // Este hook recarga los contactos cada vez que la pantalla está en foco
   useFocusEffect(
